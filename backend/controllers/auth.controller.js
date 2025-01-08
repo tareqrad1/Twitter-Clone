@@ -1,5 +1,5 @@
 import User from '../models/userSchema.js'
-import { signupSchema, loginSchema } from '../utils/validation.js';
+import { signupSchema } from '../utils/validation.js';
 import { SUCCESS, FAIL, ERROR } from '../utils/httpStatus.js';
 import bcrypt from 'bcrypt';
 import { generateTokenAndSetCookie } from '../lib/generateToken.js';
@@ -33,17 +33,13 @@ export const signup = async(req, res) => {
 };
 export const login = async(req, res) => {
     const { username, password } = req.body;
-    const { error } = loginSchema.validate(req.body);
-    if(error) return res.status(400).json({ status: FAIL, error: error.details[0].message });
     try {
         const isUser = await User.findOne({ username });
-        if(!isUser) {
-            return res.status(404).json({ status: FAIL, error: 'Username or Password Incorrect' });
+        const comparePassword = await bcrypt.compare(password, isUser?.password || '');
+        if(!isUser || !comparePassword) {
+            return res.status(404).json({ status: FAIL, error: 'Invalid Username or Password' });
         }
-        const comparePassword = await bcrypt.compare(password, isUser.password);
-        if(!comparePassword) {
-            return res.status(400).json({ status: FAIL, error: 'Username or Password Incorrect' });
-        }
+        generateTokenAndSetCookie({ id: isUser._id }, res);
         res.status(200).json({ status: SUCCESS, data: {user: isUser} });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
@@ -51,8 +47,18 @@ export const login = async(req, res) => {
 };
 export const logout = async(req, res) => {
     try {
-        //remove here
-        res.status(204).json({ status: SUCCESS, data: {user: 'Logged Out Successfully'} })
+        res.cookie('accessToken', '', {
+            maxAge: 0,
+        });
+        res.status(200).json({ status: SUCCESS, message: 'Logged Out Successfully' });
+    } catch (error) {
+        return res.status(500).json({ status: ERROR, error: error.message });
+    }
+};
+export const getMe = async(req, res) => {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        res.status(200).json({ status: SUCCESS, data: {user} })
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
