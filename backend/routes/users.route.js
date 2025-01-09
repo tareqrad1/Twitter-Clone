@@ -4,10 +4,10 @@ import { getUserProfile, followUnfollow, updateUserProfile } from "../controller
 const router = express.Router();
 
 router.route('/profile/:username')
-                                .get(protectedRoute, getUserProfile)
-router.route('/update/')
-                        .post(protectedRoute, updateUserProfile)
+                        .get(protectedRoute, getUserProfile);
+router.route('/update')
+                        .post(protectedRoute, updateUserProfile);
 router.route('/follow/:id')
-                        .post(protectedRoute, followUnfollow)
+                        .post(protectedRoute, followUnfollow);
 
 export default router;

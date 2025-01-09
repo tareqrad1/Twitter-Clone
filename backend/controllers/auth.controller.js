@@ -9,8 +9,8 @@ export const signup = async(req, res) => {
     const { error } = signupSchema.validate(req.body);
     if(error) return res.status(400).json({ status: FAIL, error: error.details[0].message });
     try {
-        const findUserName = await User.findOne({ username });
-        const findEmail = await User.findOne({ email });
+        const findUserName = await User.findOne({ username }).select('-password');
+        const findEmail = await User.findOne({ email }).select('-password');
         if(findUserName) {
             return res.status(302).json({ status: FAIL, error: 'username is already taken' });
         }
@@ -26,7 +26,7 @@ export const signup = async(req, res) => {
         });
         generateTokenAndSetCookie({ id: newUser._id }, res);
         await newUser.save();
-        res.status(201).json({ status: SUCCESS, data: {user: newUser} });
+        res.status(201).json({ status: SUCCESS, message: 'Signup Successfully' });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
@@ -40,7 +40,7 @@ export const login = async(req, res) => {
             return res.status(404).json({ status: FAIL, error: 'Invalid Username or Password' });
         }
         generateTokenAndSetCookie({ id: isUser._id }, res);
-        res.status(200).json({ status: SUCCESS, data: {user: isUser} });
+        res.status(200).json({ status: SUCCESS, user: isUser });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
@@ -58,7 +58,7 @@ export const logout = async(req, res) => {
 export const getMe = async(req, res) => {
     try {
         const user = await User.findById(req.user._id).select('-password');
-        res.status(200).json({ status: SUCCESS, data: {user} })
+        res.status(200).json({ status: SUCCESS, user: user });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }

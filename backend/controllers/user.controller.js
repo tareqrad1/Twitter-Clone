@@ -11,7 +11,7 @@ export const getUserProfile = async(req, res) => {
         if(!user) {
             return res.status(404).json({ status: FAIL, error: 'User Not Found' })
         }
-        res.status(200).json({ status: SUCCESS, data: {user} });
+        res.status(200).json({ status: SUCCESS, user });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
@@ -57,7 +57,7 @@ export const followUnfollow = async(req, res) => {
                 type: 'follow',
                 from: req.user._id,
                 to: modifyUser._id,
-            })
+            });
             await newNotification.save();
 			res.status(200).json({ status: SUCCESS, message: "Followed Successfully" });
 		}
@@ -96,7 +96,7 @@ export const updateUserProfile = async(req, res) => {
         user.bio = newBio || user.bio;
 
         user = await user.save();
-        res.status(201).json({ status:SUCCESS, data: {user: updatedUser} });
+        res.status(201).json({ status:SUCCESS, user: updatedUser });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
