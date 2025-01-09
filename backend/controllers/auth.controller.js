@@ -4,6 +4,8 @@ import { SUCCESS, FAIL, ERROR } from '../utils/httpStatus.js';
 import bcrypt from 'bcrypt';
 import { generateTokenAndSetCookie } from '../lib/generateToken.js';
 
+
+
 export const signup = async(req, res) => {
     const { username, fullname, email, password } = req.body;
     const { error } = signupSchema.validate(req.body);
@@ -31,7 +33,7 @@ export const signup = async(req, res) => {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
 };
-export const login = async(req, res) => {
+export const login = async(req, res) => {    
     const { username, password } = req.body;
     try {
         const isUser = await User.findOne({ username });
@@ -50,6 +52,9 @@ export const logout = async(req, res) => {
         res.cookie('accessToken', '', {
             maxAge: 0,
         });
+        res.cookie('refreshToken', '', {
+            maxAge: 0,
+        });
         res.status(200).json({ status: SUCCESS, message: 'Logged Out Successfully' });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
@@ -63,3 +68,29 @@ export const getMe = async(req, res) => {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
 };
+
+// export const refreshToken = async (req, res) => {
+//     const refreshToken = req.cookies.refreshToken;
+//     if (!refreshToken) return res.status(401).json({ status: FAIL, error: 'No refresh token provided' });
+//     try {
+//         const payload = jwt.verify(refreshToken, process.env.SECRET_KEY);
+//         console.log(payload, 'payload');
+//         const accessToken = jwt.sign({ id: payload.id }, process.env.SECRET_KEY, { expiresIn: '1m' });
+//         res.cookie('accessToken', accessToken, { httpOnly: true, secure: true, sameSite: 'Strict' });
+//         res.cookie('accessToken', refreshToken, {
+//             httpOnly: true,
+//             secure: true,
+//             sameSite: 'Strict',
+//             maxAge: 1* 60 * 1000 // 1 min in milliseconds
+//         })
+//         res.cookie('refreshToken', refreshToken, {
+//             httpOnly: true,
+//             secure: true,
+//             sameSite: 'Strict',
+//             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+//         })
+//         res.status(200).json({ status: SUCCESS, message: 'Access token refreshed successfully'});
+//     } catch (error) {
+//         return res.status(500).json({ status: ERROR, error: error.message });
+//     }
+// }

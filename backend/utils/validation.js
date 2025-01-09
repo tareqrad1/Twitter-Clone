@@ -30,26 +30,27 @@ export const signupSchema = Joi.object({
 });
 
 export const updateSchema = Joi.object({
-    newUsername: Joi.string().pattern(/^\S*$/).min(4).max(16).messages({
+    username: Joi.string().pattern(/^\S*$/).min(4).max(16).messages({
         'string.empty': "Username cannot be an empty field",
         'string.pattern.base': 'Username must not contain any spaces',
         'string.min': 'Add A valid username',
         'string.max': 'Add A valid username',
     }),
-    newFullname: Joi.string().messages({
+    fullname: Joi.string().messages({
         'string.empty': "Full Name cannot be an empty field",
     }),
     newEmail: Joi.string().trim().lowercase().email({tlds: { allow: ['com', 'net'] }}).messages({
         'string.empty': `Email cannot be an empty field`,
         'string.email': ` Email must be a valid email address`,
     }),
-    currentPassword: Joi.string().min(6).max(20).label('password').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/).messages({
+    currentPassword: Joi.string(),
+    newPassword: Joi.string().min(6).max(20).label('password').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/).messages({
         "string.empty": "Password cannot be an empty field",
         "string.min": "Password Must have at least 6 characters",
         "string.pattern.base": "Must have a Strong Password",
     }),
-    newPassword: Joi.any().messages({ 
-        'any.only': 'Confirm password does not match',
-    }),
-    bio: Joi.string().max(100)
+    bio: Joi.string().allow('').max(100),
+    link: Joi.string().allow('').uri(),
+    coverImage: Joi.string(),
+    profileImage: Joi.string(),
 });

@@ -3,6 +3,15 @@ import User from '../models/userSchema.js';
 import { updateSchema } from '../utils/validation.js';
 import { SUCCESS, FAIL, ERROR } from '../utils/httpStatus.js';
 import bcrypt from 'bcrypt';
+import {v2 as cloudinary } from 'cloudinary';
+
+
+
+cloudinary.config({
+    cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret:process.env.CLOUDINARY_API_SECRET
+});
 
 export const getUserProfile = async(req, res) => {
     const { username } = req.params;
@@ -69,34 +78,45 @@ export const followUnfollow = async(req, res) => {
 //suggested here
 
 export const updateUserProfile = async(req, res) => {
-    const { newUsername, newFullname, newEmail, currentPassword, newPassword, newBio } = req.body;
+    let { username, fullname, email, currentPassword, newPassword, bio, link, profileImage, coverImage } = req.body;
     const { error } = updateSchema.validate(req.body);
     if(error) {
         return res.status(400).json({ status: FAIL, error: error.details[0].message });
     }
     try {
-        const user = await User.findById(req.user._id).select('-password');
-        if(!user) {
-            return res.status(404).json({ status:FAIL, error: 'User Not Found' });
-        }
+        let user = await User.findById(req.user._id);
+        if(!user) return res.status(404).json({ status: FAIL, error: 'User Not Found' });
         if((!currentPassword && newPassword) || (currentPassword && !newPassword)) {
-            return res.status(400).json({ status: FAIL, error: 'Provide both passwords' });
+            return res.status(400).json({ status:FAIL, error: 'Please provide new password and current password' });
         }
         if(currentPassword && newPassword) {
-            const isMatched = await bcrypt.compare(currentPassword, user.password);
-            if(!isMatched) return res.status(404).json({ status: FAIL, error: 'Invalid Password' })
+            const isMatch = await bcrypt.compare(currentPassword, user.password);
+            if(!isMatch) return res.status(404).json({ status:FAIL, error: 'current password Incorrect' });
+            user.password = await bcrypt.hash(newPassword, 10);
         }
-        const salt = await bcrypt.genSalt(10);
-        const hashNewPassword = await bcrypt.hash(newPassword, salt);
-        
-        user.username = newUsername || user.username;
-        user.fullname = newFullname || user.fullname;
-        user.email = newEmail || user.email;
-        user.password = hashNewPassword || user.password;
-        user.bio = newBio || user.bio;
-
+        if(profileImage) {
+            if(user.profileImage) {
+                await cloudinary.uploader.destroy(user.profileImage.split('/').pop().split('.')[0]);
+            }
+            let uploadResponse = await cloudinary.uploader.upload(profileImage);
+            profileImage = uploadResponse.secure_url
+        }
+        if(coverImage) {
+            if(user.coverImage) {
+                await cloudinary.uploader.destroy(user.coverImage.split('/').pop().split('.')[0]);
+            }
+            let uploadResponse = await cloudinary.uploader.upload(coverImage);
+            coverImage = uploadResponse.secure_url
+        }
+        user.username = username || user.username;
+        user.fullname = fullname || user.fullname;
+        user.email = email || user.email;
+        user.link = link !== undefined ? link : user.link;
+        user.bio = bio !== undefined ? bio : user.bio;
+        user.coverImage = coverImage !== undefined ? coverImage : user.coverImage;
+        user.profileImage = profileImage !== undefined ? profileImage : user.profileImage;
         user = await user.save();
-        res.status(201).json({ status:SUCCESS, user: updatedUser });
+        res.status(201).json({ status: SUCCESS, user });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
