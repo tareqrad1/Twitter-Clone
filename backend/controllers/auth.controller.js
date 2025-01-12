@@ -42,6 +42,7 @@ export const login = async(req, res) => {
             return res.status(404).json({ status: FAIL, error: 'Invalid Username or Password' });
         }
         generateTokenAndSetCookie({ id: isUser._id }, res);
+        isUser.password = null;
         res.status(200).json({ status: SUCCESS, user: isUser });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
@@ -50,9 +51,6 @@ export const login = async(req, res) => {
 export const logout = async(req, res) => {
     try {
         res.cookie('accessToken', '', {
-            maxAge: 0,
-        });
-        res.cookie('refreshToken', '', {
             maxAge: 0,
         });
         res.status(200).json({ status: SUCCESS, message: 'Logged Out Successfully' });

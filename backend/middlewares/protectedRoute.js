@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 import User from "../models/userSchema.js";
 dotenv.config();
 
-const protectedRoute = async(req, res, next) => {
+const protectedRoute = async(req, res, next) => { //why protected route ? 1- login in website the first 2- add data user in res server
     const token = req.cookies.accessToken;
     try {
         if(!token) {
@@ -14,7 +14,7 @@ const protectedRoute = async(req, res, next) => {
         if(!decoded) {
             return res.status(401).json({ status: FAIL, error: 'Unauthorized: Invalid Token' });
         }
-        const user = await User.findById(decoded.id).select('-password');
+        const user = await User.findById(decoded.id).select('-password'); // user inside and logged in website 
         if(!user) {
             return res.status(404).json({ status: FAIL, error: 'User Not Found' });
         }

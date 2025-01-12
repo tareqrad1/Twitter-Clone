@@ -4,13 +4,13 @@ dotenv.config();
 
 export const generateTokenAndSetCookie = async(payload, res) =>  {
     const accessToken = jwt.sign(payload, process.env.SECRET_KEY, {
-        expiresIn: '1m',
+        expiresIn: '15m',
     });
     // const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
     //     expiresIn: '7d',
     // });
     res.cookie('accessToken', accessToken, {
-        maxAge: 3 * 60 * 1000,
+        maxAge: 15 * 60 * 1000,
         httpOnly: true, // xss attack,
         sameSite: "strict", // cs attack
         secure: process.env.NODE_ENV || 'development',

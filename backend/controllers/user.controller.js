@@ -3,15 +3,7 @@ import User from '../models/userSchema.js';
 import { updateSchema } from '../utils/validation.js';
 import { SUCCESS, FAIL, ERROR } from '../utils/httpStatus.js';
 import bcrypt from 'bcrypt';
-import {v2 as cloudinary } from 'cloudinary';
-
-
-
-cloudinary.config({
-    cloud_name:process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
-});
+import { v2 as cloudinary } from 'cloudinary';
 
 export const getUserProfile = async(req, res) => {
     const { username } = req.params;
@@ -25,7 +17,6 @@ export const getUserProfile = async(req, res) => {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
 };
-
 export const followUnfollow = async(req, res) => {
     const { id } = req.params;
     try {
@@ -74,9 +65,7 @@ export const followUnfollow = async(req, res) => {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
 };
-
 //suggested here
-
 export const updateUserProfile = async(req, res) => {
     let { username, fullname, email, currentPassword, newPassword, bio, link, profileImage, coverImage } = req.body;
     const { error } = updateSchema.validate(req.body);
@@ -116,6 +105,7 @@ export const updateUserProfile = async(req, res) => {
         user.coverImage = coverImage !== undefined ? coverImage : user.coverImage;
         user.profileImage = profileImage !== undefined ? profileImage : user.profileImage;
         user = await user.save();
+        user.password = null;
         res.status(201).json({ status: SUCCESS, user });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
