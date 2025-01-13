@@ -140,10 +140,13 @@ export const getFollowingPost = async(req, res) => {
     try {
         const user = await User.findById(req.user._id);
         if(!user) return res.status(404).json({ status: FAIL, error: 'User Not Found' });
-
+        
         const feedPosts = await Post.find({ user: {$in: user.following} }).sort({ createdAt: -1 }).populate({
             path: 'user',
             select: '-password',
+        }).populate({
+            path: "comments.user",
+            select: "-password",
         });
         res.status(200).json({ status: SUCCESS, posts: feedPosts });
     } catch (error) {
@@ -156,52 +159,15 @@ export const getUserPost = async(req, res) => {
     try {
         const user = await User.findOne({ username });
         if(!user) return res.status(404).json({ status: FAIL, error: 'User Not Found' });
-
-        const posts = await Post.find({ user: user._id });
+        const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 }).populate({
+            path: 'user',
+            select: '-password'
+        }).populate({
+            path: 'comment.user',
+            select: '-password',
+        });
         res.status(200).json({ status: SUCCESS, posts });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });
     }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// {
-//     "status": "success",
-//     "user": {
-//         "_id": "6783b6c935c2457efef81e79",
-//         "username": "medo",
-//         "fullname": "medo alshanti",
-//         "password": null,
-//         "email": "medoshanti@gmail.com",
-//         "followers": [],
-//         "following": [
-//             "677fba31dff69e01a493ab3e"
-//         ],
-//         "profileImage": "",
-//         "coverImage": "",
-//         "bio": "",
-//         "link": "",
-//         "likedPost": [
-//             "6783b4522e82f91c3760d24c",
-//             "6783c04c00621882a916c2b7"
-//         ],
-//         "createdAt": "2025-01-12T12:34:17.713Z",
-//         "updatedAt": "2025-01-12T13:27:00.181Z",
-//         "__v": 0
-//     }
-// }
+};

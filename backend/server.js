@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import authRoute from './routes/auth.route.js';
 import userRoute from './routes/user.route.js';
 import postRoute from './routes/post.route.js';
+import notificationRoute from './routes/notification.route.js';
 
 import cloudinaryConfig from './config/cloudinaryConfig.js';
 
@@ -32,6 +33,7 @@ app.use(helmet());
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/posts', postRoute);
+app.use('/api/notification', notificationRoute);
 app.use('*', (_, res) => {
     res.status(404).json({ error: 'Route Not found !' });
 });

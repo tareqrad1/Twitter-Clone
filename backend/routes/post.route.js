@@ -1,5 +1,5 @@
 import express from 'express';
-import { createPost, deletePost, commentOnPost, likeUnlikePost, getAllPost, getAllLike, getFollowingPost } from '../controllers/post.controller.js';
+import { createPost, deletePost, commentOnPost, likeUnlikePost, getAllPost, getAllLike, getFollowingPost, getUserPost } from '../controllers/post.controller.js';
 import protectedRoute from '../middlewares/protectedRoute.js'
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.route('/following')
 router.route('/likes/:id')
                 .get(protectedRoute, getAllLike)
 router.route('/user/:username')
-                .get(protectedRoute, getAllLike)
+                .get(protectedRoute, getUserPost)
 router.route('/create')
                     .post(protectedRoute, createPost)
 router.route('/like/:id')
