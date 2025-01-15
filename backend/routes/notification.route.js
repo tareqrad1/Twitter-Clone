@@ -5,7 +5,6 @@ const router = express.Router();
 
 router.route('/')
                 .get(protectedRoute, getMyNotification)
-router.route('/')
                 .delete(protectedRoute, deleteNotification)
 router.route('/:id')
                 .delete(protectedRoute, deleteOneNotification)
