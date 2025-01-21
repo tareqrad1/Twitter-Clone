@@ -16,7 +16,6 @@ const Posts: React.FC = (): JSX.Element => {
                     <Post post={ele} key={ele._id} />
                 ))
             )}
-            { posts.length === 0 && <h1>No comments yet 🤔 Be the first one 😉</h1>}
         </div>
     )
 }

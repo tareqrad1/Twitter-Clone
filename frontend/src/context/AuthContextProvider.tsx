@@ -70,7 +70,10 @@ import axios from "axios";
     );
   };
 
-
-  export const useAuthContext = () => {
-    return useContext(AuthContext);
-  };
+  export const useAuthContext = (): AuthContextShape => {
+      const context = useContext(AuthContext);
+      if (context === undefined) {
+          throw new Error('useAuthContext must be used within a AuthContextProvider');
+      }
+      return context;
+  }

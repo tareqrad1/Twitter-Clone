@@ -1,31 +1,25 @@
-import { FC, FormEvent, useState } from "react";
+import { FC } from "react";
 import { Link } from "react-router-dom";
-import { Heart, MessageCircle, Repeat2, Bookmark, Trash } from 'lucide-react'
+import { Heart, Repeat2, Bookmark, Trash } from 'lucide-react'
 import { PostState } from "../../hooks/useGetPosts";
 import { useAuthContext } from "../../context/AuthContextProvider";
 import { useDeletePost } from "../../hooks/useDeletePost";
 import { usePostsContext } from "../../context/PostsContextProvider";
+import { DialogDemo } from "../ui/DialogDemo";
 
 interface PostPropsShape {
 	post: PostState;
 }
 const Post: FC<PostPropsShape> = ({ post }): JSX.Element => {
-	const [comment, setComment] = useState("");
-	const postOwner = post.user; //me
+	const postOwner = post.user;
 	const { authUser } = useAuthContext();
 	const { handleDeletePost } = usePostsContext();
-	const { setId, id } = useDeletePost();
+	const { setId } = useDeletePost();
 	const isLiked = false;
-
 	const isMyPost = postOwner._id === authUser?._id;
 
 	const formattedDate = "1h";
 
-	const isCommenting = false;
-
-	const handlePostComment = (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-	};
 	const handleDeleteFunc = (id: string) => {
 		setId(id);
 		handleDeletePost(id);
@@ -34,6 +28,7 @@ const Post: FC<PostPropsShape> = ({ post }): JSX.Element => {
 
 	return (
 		<>
+			
 			<div className='flex gap-2 items-start p-4 border-b border-gray-700'>
 				<div className='avatar'>
 					<Link to={`/profile/${postOwner.username}`} className='w-8 rounded-full overflow-hidden'>
@@ -58,7 +53,7 @@ const Post: FC<PostPropsShape> = ({ post }): JSX.Element => {
 					</div>
 					<div className='flex flex-col gap-3 overflow-hidden'>
 						<span>{post.text}</span>
-						{(
+						{post.image && (
 							<img
 								src={post.image}
 								className='h-80 object-contain rounded-lg border border-gray-700'
@@ -70,67 +65,9 @@ const Post: FC<PostPropsShape> = ({ post }): JSX.Element => {
 						<div className='flex gap-4 items-center w-2/3 justify-between'>
 							<div
 								className='flex gap-1 items-center cursor-pointer group'
-								// onClick={() => document.getElementById("comments_modal" + post._id).showModal()}
 							>
-								<MessageCircle className='w-4 h-4  text-slate-500 group-hover:text-sky-400' />
-								<span className='text-sm text-slate-500 group-hover:text-sky-400'>
-									12
-								</span>
+								<DialogDemo />
 							</div>
-							{/* We're using Modal Component from DaisyUI */}
-							<dialog id={`comments_modal$`} className='modal border-none outline-none'>
-								<div className='modal-box rounded border border-gray-600'>
-									<h3 className='font-bold text-lg mb-4'>COMMENTS</h3>
-									<div className='flex flex-col gap-3 max-h-60 overflow-auto'>
-										{post.comment.length === 0 && (
-											<p className='text-sm text-slate-500'>
-												No comments yet 🤔 Be the first one 😉
-											</p>
-										)}
-										{/* {post.comment.map((comment) => (
-											<div key={comment._id} className='flex gap-2 items-start'>
-												<div className='avatar'>
-													<div className='w-8 rounded-full'>
-														<img
-															src={comment.profileImg || "/avatar-placeholder.png"}
-														/>
-													</div>
-												</div>
-												<div className='flex flex-col'>
-													<div className='flex items-center gap-1'>
-														<span className='font-bold'>{comment.user.fullName}</span>
-														<span className='text-gray-700 text-sm'>
-															@{comment.user.username}
-														</span>
-													</div>
-													<div className='text-sm'>{comment.text}</div>
-												</div>
-											</div>
-										))} */}
-									</div>
-									<form
-										className='flex gap-2 items-center mt-4 border-t border-gray-600 pt-2'
-										onSubmit={handlePostComment}
-									>
-										<textarea
-											className='textarea w-full p-1 rounded text-md resize-none border focus:outline-none  border-gray-800'
-											placeholder='Add a comment...'
-											value={comment}
-											onChange={(e) => setComment(e.target.value)}
-										/>
-										<button className='btn btn-primary rounded-full btn-sm text-white px-4'>
-											{isCommenting ? (
-												<span className='loading loading-spinner loading-md'></span>
-											) : (
-												"Post"
-											)}
-										</button>
-									</form>
-								</div>
-								<form method='dialog' className='modal-backdrop'>
-									<button className='outline-none'>close</button>
-								</form>
-							</dialog>
 							<div className='flex gap-1 items-center group cursor-pointer'>
 								<Repeat2 className='w-6 h-6  text-slate-500 group-hover:text-green-500' />
 								<span className='text-sm text-slate-500 group-hover:text-green-500'>0</span>

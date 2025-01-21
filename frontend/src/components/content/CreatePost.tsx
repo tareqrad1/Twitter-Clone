@@ -1,9 +1,9 @@
 import { Image, Smile, CircleX } from 'lucide-react';
-import React, { ChangeEvent, FormEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useRef } from 'react';
+import { useCreatePost } from '../../hooks/useCreatePost';
 
 const CreatePost: React.FC = (): JSX.Element => {
-	const [text, setText] = useState<string>("");
-  const [img, setImg] = useState<string | null>(null);
+	
 	const imgRef = useRef<HTMLInputElement | null>(null);
 	const isPending = false;
 	const isError = false;
@@ -12,18 +12,15 @@ const CreatePost: React.FC = (): JSX.Element => {
 		profileImg: "/avatars/boy1.png",
 	};
 
-	const handleSubmit = (e: FormEvent) => {
-		e.preventDefault();
-    setImg(null)
-		alert("Post created successfully");
-	};
+	const { data: inputPost, setData, handleChange, handleSubmit } = useCreatePost();
 
 	const handleImgChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
 		if (file) {
 			const reader = new FileReader();
 			reader.onload = () => {
-				setImg(reader.result as string);
+				// setImg(reader.result as string);
+				setData({text: '', image: reader.result as string });
 			};
 			reader.readAsDataURL(file);
 		}
@@ -40,19 +37,20 @@ const CreatePost: React.FC = (): JSX.Element => {
 				<textarea
 					className='textarea bg-transparent w-full p-0 text-lg resize-none border-none focus:outline-none  border-gray-800'
 					placeholder='What is happening?!'
-					value={text}
-					onChange={(e) => setText(e.target.value)}
+					value={inputPost.text}
+					name='text'
+					onChange={handleChange}
 				/>
-				{img && (
+				{inputPost.image && (
 					<div className='relative w-72 mx-auto'>
 						<CircleX
 							className='absolute top-0 right-0 text-white bg-gray-800 rounded-full w-5 h-5 cursor-pointer'
 							onClick={() => {
-								setImg(null);
+								setData({ text: '', image: null });
 								imgRef.current!.value = '';
 							}}
 						/>
-						<img src={img} className='w-full mx-auto h-72 object-contain rounded' />
+						<img src={inputPost.image} className='w-full mx-auto h-72 object-contain rounded' />
 					</div>
 				)}
 
