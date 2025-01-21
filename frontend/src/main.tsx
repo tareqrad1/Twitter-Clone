@@ -3,11 +3,17 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
+import { AuthContextProvider } from './context/AuthContextProvider.tsx'
+import PostsContextProvider from './context/PostsContextProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+    <AuthContextProvider>
+      <PostsContextProvider>
+        <App />
+      </PostsContextProvider>
+    </AuthContextProvider>
     </BrowserRouter>
   </StrictMode>,
 )

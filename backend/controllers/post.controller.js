@@ -37,7 +37,7 @@ export const deletePost = async(req, res) => {
         if(post.user.toString() !== req.user._id.toString()) {
             return res.status(401).json({ status: FAIL, error: 'you are not authorized to delete this post' });
         }
-        await Post.findByIdAndDelete(id);
+        await Post.findByIdAndDelete(post.id);
         if(post.image) {
             await cloudinary.uploader.destroy(post.image.split('/').pop().split('.')[0]);
         }
@@ -111,7 +111,6 @@ export const getAllPost = async(req, res) => {
             path: 'comment.user',
             select: '-password',
         });
-        if(posts.length === 0) return res.status(404).json([]);
         res.status(200).json({ status: SUCCESS, posts });
     } catch (error) {
         return res.status(500).json({ status: ERROR, error: error.message });

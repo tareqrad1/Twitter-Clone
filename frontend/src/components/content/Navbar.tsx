@@ -1,37 +1,21 @@
-import React, { useState } from 'react'
-import Posts from './Posts';
-import FollowingContent from './FollowingContent';
-
-const Navbar: React.FC = () => {
-    const [forYouActive, setForYouActive] = useState(true);
-    function handleClickActive() {
-        setForYouActive(true)
-    }
-    function handleClickRmActive() {
-        setForYouActive(false)
-    }
-  return (
-    <>
-        <div className='w-full border-b border-[#333] border-solid flex py-2'>
-            <div className='flex-1 text-center'>
-                <h1 className={`cursor-pointer ${forYouActive && `text-primaryColor` } capitalize`} onClick={handleClickActive}>for you</h1>
-                {forYouActive && (
-                    <div>
-                        <Posts />
-                    </div>
-                )}
+import React from 'react'
+interface stateShape {
+    setIsActive: (active: boolean) => void;
+    isActive: boolean;
+}
+const Navbar: React.FC<stateShape> = ({ setIsActive, isActive }): JSX.Element => {
+    return (
+        <>
+            <div className='w-full border-b border-[#333] border-solid flex'>
+                <div className='flex-1 text-center hover:bg-stone-900 py-3 transition-colors'>
+                    <h1 className={`cursor-pointer ${isActive && 'text-primaryColor'} capitalize`} onClick={() => setIsActive(true)}>for you</h1>
+                </div>
+                <div className='flex-1 text-center hover:bg-stone-900 py-3 transition-colors'>
+                    <h1 className={`cursor-pointer capitalize ${!isActive && 'text-primaryColor'}`} onClick={() => setIsActive(false)}>following</h1>
+                </div>
             </div>
-            <div className='flex-1 text-center'>
-                <h1 className={`cursor-pointer ${!forYouActive && `text-primaryColor`} capitalize`} onClick={handleClickRmActive}>following</h1>
-                {!forYouActive && (
-                    <div>
-                        <FollowingContent />
-                    </div>
-                )}
-            </div>
-        </div>
-    </>
-  )
+        </>
+    )
 }
 
 export default Navbar

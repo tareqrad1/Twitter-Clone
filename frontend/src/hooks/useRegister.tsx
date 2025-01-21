@@ -2,6 +2,7 @@ import AXIOS from '../../apis/api';
 import toast from 'react-hot-toast';
 import { ChangeEvent, FormEvent, useState } from "react";
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface UseRegisterResultShape {
     registerData: RegisterState;
@@ -18,6 +19,7 @@ interface RegisterState {
     confirmPassword: string,
 };
 export const useRegister = ():UseRegisterResultShape => {
+    const Navigate = useNavigate();
     const [registerData, setRegisterData] = useState<RegisterState>({
         email: '',
         username: '',
@@ -53,7 +55,8 @@ export const useRegister = ():UseRegisterResultShape => {
                 email: '',
                 password: '',
                 confirmPassword: '',
-            })
+            });
+            Navigate('/login')
         } catch (error: unknown) {
             if(axios.isAxiosError(error)) {
                 toast.error(error?.response?.data.error);

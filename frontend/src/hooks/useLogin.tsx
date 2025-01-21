@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react"
 import toast from "react-hot-toast";
 import AXIOS from "../../apis/api";
-
+import { useAuthContext } from "../context/AuthContextProvider";
 interface UseLoginStateShape {
     loginData: LoginState;
     loading: boolean;
@@ -14,6 +14,7 @@ interface LoginState {
     password: string;
 }
 export const useLogin = (): UseLoginStateShape => {
+    const { setAuthUser } = useAuthContext();
     const [loginData, setLoginData] = useState({
         username: '',
         password: '',
@@ -31,13 +32,13 @@ export const useLogin = (): UseLoginStateShape => {
         e.preventDefault();
         setLoading(true);
         try {
-            await AXIOS.post('/auth/login', loginData, {
+            const response = await AXIOS.post('/auth/login', loginData, {
                 withCredentials: true,
             });
             toast.success('Login successfully');
             setLoginData({ username: '', password: '' });
+            setAuthUser(response.data.user);
         } catch (error: unknown) {
-            console.log(error);
             if(axios.isAxiosError(error)) {
                 toast.error(error.response?.data.error);
             }

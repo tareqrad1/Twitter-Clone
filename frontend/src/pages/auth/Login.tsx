@@ -19,7 +19,7 @@ const Login: React.FC = (): JSX.Element => {
                     <form onSubmit={handleSubmit} className="space-y-4"> 
                         <Input type="text" name='username' value={loginData.username} onChange={handleChange} placeholder="Username" className="text-white bg-transparent focus:border-0 focus:outline-none pr-24 pl-5" />
                         <Input type="password" name='password' value={loginData.password} onChange={handleChange} placeholder="Password" className="text-white bg-transparent focus:border-0 focus:outline-none pr-24 pl-5" />
-                        <Button variant='outline' className="bg-primaryColor w-full border-none outline-none text-white mt-3 rounded-full">{loading ? <Loader className="animate-spin" /> : 'Sign Up'}</Button>
+                        <Button variant='outline' className="bg-primaryColor w-full border-none outline-none text-white mt-3 rounded-full">{loading ? <Loader className="animate-spin" /> : 'Login'}</Button>
                     </form>
                     <div>
                         <p className="text-white my-2 text-sm">don't have any account ?</p>

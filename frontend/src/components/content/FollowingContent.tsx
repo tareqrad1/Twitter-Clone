@@ -2,7 +2,7 @@ import React from "react"
 
 const FollowingContent: React.FC = () => {
   return (
-    <div>FollowingContent</div>
+    <div className="">Following Content</div>
   )
 }
 
